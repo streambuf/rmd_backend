@@ -13,7 +13,7 @@ import ru.rmd.monolith.repository.ImageRepository
 import ru.rmd.monolith.service.ImageService
 
 @RestController
-@RequestMapping("/images")
+@RequestMapping("/api/v1/images")
 @CrossOrigin(origins = ["*"])
 class ImageController(
         private val imageRepository: ImageRepository,

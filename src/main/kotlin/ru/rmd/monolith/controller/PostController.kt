@@ -3,24 +3,29 @@ package ru.rmd.monolith.controller
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import ru.rmd.monolith.dto.PersistPostRequest
 import ru.rmd.monolith.entity.PostEntity
-import ru.rmd.monolith.repository.PostRepository
+import ru.rmd.monolith.service.PostService
 
 @RestController
-@RequestMapping(value = ["post"])
+@RequestMapping("/api/v1/posts")
 @CrossOrigin(origins = ["*"])
 class PostController(
-        private val postRepository: PostRepository
+        private val postService: PostService
 ) {
 
     @PostMapping(value = [""])
-    fun create(@RequestBody post: PostEntity): Mono<PostEntity> {
-        return postRepository.insert(post);
+    fun create(@RequestBody request: PersistPostRequest): Mono<PostEntity> {
+        return postService.create(request)
+    }
+
+    @GetMapping(value = ["/{id}"])
+    fun getOne(@PathVariable("id") id: String): Mono<PostEntity> {
+        return postService.getOne(id)
     }
 
     @GetMapping(value = [""])
-    fun all(): Flux<PostEntity> {
-        return postRepository.findAll();
+    fun getList(): Flux<PostEntity> {
+        return postService.getList()
     }
-
 }

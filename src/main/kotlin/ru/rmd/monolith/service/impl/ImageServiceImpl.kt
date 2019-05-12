@@ -35,7 +35,7 @@ class ImageServiceImpl(
             }.flatMap {
                 imageRepository.insert(ImageEntity(it))
             }.map {
-                UploadFileResponse(file = (UploadFile("${props.serverHost}/images/${it.id}")))
+                UploadFileResponse(file = (UploadFile("${props.serverHost}/api/v1/images/${it.id}")))
             }
 
     override fun createImageByUrl(request: UploadImageByUrlRequest): Mono<UploadFileResponse> {
