@@ -10,13 +10,6 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
-  frontend:
-    container_name: rmd_frontend
-    build:
-      context: ../rmd_front
-      dockerfile: Dockerfile
-    ports:
-      - "8009:80"
   backend:
     container_name: rmd_backend
     build:
@@ -28,13 +21,12 @@ services:
       - JAVA_OPTS=-Dspring.profiles.active=prod -Dspring.data.mongodb.password=${MONGO_PASSWORD} -Dspring.app.serverHost=${SERVER_HOST}
     depends_on:
       - mongo
-#  nginx:
-#    container_name: rmd_nginx
-#    image: nginx:1.13
-#    restart: always
-#    ports:
-#      - 80:80
-#      - 443:443
-#    volumes:
-#      - ./nginx/conf.d:/etc/nginx/conf.d
+  frontend:
+    container_name: rmd_frontend
+    build:
+      context: ../rmd_front
+      dockerfile: Dockerfile
+    ports:
+      - "8009:80"
+
 
