@@ -9,7 +9,7 @@ class PersistPostRequest(
     var age: Int,
     var gender: String,
     var image: String?,
-    var system: PersistPostRequestMeta
+    var system: PersistPostRequestMeta?
 )
 
 class PersistPostRequestMeta {

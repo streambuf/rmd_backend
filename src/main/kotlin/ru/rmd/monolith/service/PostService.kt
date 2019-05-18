@@ -9,4 +9,5 @@ interface PostService {
     fun create(request: PersistPostRequest): Mono<PostEntity>
     fun getOne(id: String): Mono<PostEntity>
     fun getList(): Flux<PostEntity>
+    fun update(id: String, request: PersistPostRequest): Mono<PostEntity>
 }

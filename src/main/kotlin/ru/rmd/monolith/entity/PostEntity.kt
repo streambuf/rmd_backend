@@ -2,6 +2,7 @@ package ru.rmd.monolith.entity
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
+import java.util.*
 
 @Document(collection = "posts")
 data class PostEntity(
@@ -15,5 +16,8 @@ data class PostEntity(
         var age: Int,
         var gender: String,
         var image: String?,
-        var author: String
-)
+        var author: String,
+        var createdAt: Date,
+        var updatedAt: Date?
+) {
+}

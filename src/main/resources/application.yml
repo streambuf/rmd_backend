@@ -6,4 +6,8 @@ spring:
     serverHost: http://localhost:8008
   data:
     mongodb:
-      uri: mongodb://localhost:27017/rmd
+      username: root
+      host: localhost
+      port: 27017
+      database: rmd
+      authentication-database: admin

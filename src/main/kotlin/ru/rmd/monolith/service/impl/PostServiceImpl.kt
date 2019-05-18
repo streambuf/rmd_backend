@@ -6,23 +6,30 @@ import ru.rmd.monolith.dto.PersistPostRequest
 import ru.rmd.monolith.entity.PostEntity
 import ru.rmd.monolith.exception.BadRequestException
 import ru.rmd.monolith.repository.PostRepository
+import ru.rmd.monolith.repository.PostRepositoryCustom
 import ru.rmd.monolith.service.PostService
 import ru.rmd.monolith.service.UserService
+import java.util.*
 
 @Service
 class PostServiceImpl(
         private val postRepository: PostRepository,
+        private val postRepositoryCustom: PostRepositoryCustom,
         private val userService: UserService
 ) : PostService {
 
     override fun create(request: PersistPostRequest): Mono<PostEntity> {
-        return userService.createFakeUser(request.system.author!!)
+        return userService.createFakeUser(request.system!!.author!!)
                 .then(postRepository.insert(convertRequestToPostEntity(request = request)))
     }
 
     override fun getOne(id: String) = postRepository.findById(id)
 
     override fun getList() = postRepository.findAll()
+
+    override fun update(id: String, request: PersistPostRequest) = postRepositoryCustom.update(id, request)
+            .then(getOne(id))
+
 
     private fun convertRequestToPostEntity(request: PersistPostRequest, author: String? = null) = PostEntity(
             id = null,
@@ -34,7 +41,9 @@ class PostServiceImpl(
             age = request.age,
             gender = request.gender,
             image = request.image,
-            author = request.system.author ?: author ?: throw BadRequestException("Empty author")
+            author = request.system?.author ?: author ?: throw BadRequestException("Empty author"),
+            createdAt = Date(),
+            updatedAt = null
     )
 
 }

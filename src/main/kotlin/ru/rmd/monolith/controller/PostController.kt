@@ -24,6 +24,11 @@ class PostController(
         return postService.getOne(id)
     }
 
+    @PostMapping(value = ["/{id}"])
+    fun update(@PathVariable("id") id: String, @RequestBody request: PersistPostRequest): Mono<PostEntity> {
+        return postService.update(id, request)
+    }
+
     @GetMapping(value = [""])
     fun getList(): Flux<PostEntity> {
         return postService.getList()
