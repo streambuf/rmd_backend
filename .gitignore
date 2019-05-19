@@ -30,3 +30,5 @@ HELP.md
 .vscode/
 
 nginx/conf.d/site.conf
+
+.DS_Store
