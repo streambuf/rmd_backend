@@ -24,7 +24,7 @@ class PostController(
         return postService.getOne(id)
     }
 
-    @PostMapping(value = ["/{id}"])
+    @PutMapping(value = ["/{id}"])
     fun update(@PathVariable("id") id: String, @RequestBody request: PersistPostRequest): Mono<PostEntity> {
         return postService.update(id, request)
     }

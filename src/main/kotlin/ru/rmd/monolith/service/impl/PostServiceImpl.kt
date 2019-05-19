@@ -5,6 +5,7 @@ import reactor.core.publisher.Mono
 import ru.rmd.monolith.dto.PersistPostRequest
 import ru.rmd.monolith.entity.PostEntity
 import ru.rmd.monolith.exception.BadRequestException
+import ru.rmd.monolith.exception.NotFoundException
 import ru.rmd.monolith.repository.PostRepository
 import ru.rmd.monolith.repository.PostRepositoryCustom
 import ru.rmd.monolith.service.PostService
@@ -24,6 +25,7 @@ class PostServiceImpl(
     }
 
     override fun getOne(id: String) = postRepository.findById(id)
+            .switchIfEmpty(Mono.error(NotFoundException("Not found post with id: $id")))
 
     override fun getList() = postRepository.findAll()
 
