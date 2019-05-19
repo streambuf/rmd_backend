@@ -31,10 +31,9 @@ services:
       - "8009:80"
     restart: always
   prerender:
-    image: cerisier/prerender
+    container_name: rmd_prerender
+    image: lune/prerender
     ports:
       - "4000:3000"
     restart: always
-    depends_on:
-      - frontend
 
