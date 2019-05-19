@@ -32,7 +32,6 @@ class PostServiceImpl(
     override fun update(id: String, request: PersistPostRequest) = postRepositoryCustom.update(id, request)
             .then(getOne(id))
 
-
     private fun convertRequestToPostEntity(request: PersistPostRequest, author: String? = null) = PostEntity(
             id = null,
             message = request.message,
