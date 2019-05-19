@@ -16,7 +16,7 @@ class ExceptionHandler : WebExceptionHandler {
             is Exception -> exchange.response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
         }
 
-        /* Do common thing like logging etc... */
+        /* Do common thing like logging etc...  */
 
         return Mono.empty()
     }
