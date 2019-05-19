@@ -32,7 +32,7 @@ services:
     restart: always
   prerender:
     container_name: rmd_prerender
-    image: lune/prerender
+    image: magnetme/prerender-docker
     ports:
       - "4000:3000"
     restart: always
