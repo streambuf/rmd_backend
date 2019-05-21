@@ -2,7 +2,7 @@ package ru.rmd.monolith.service.impl
 
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
-import ru.rmd.monolith.dto.PersistPostRequest
+import ru.rmd.monolith.dto.request.PersistPostRequest
 import ru.rmd.monolith.entity.PostEntity
 import ru.rmd.monolith.exception.BadRequestException
 import ru.rmd.monolith.exception.NotFoundException

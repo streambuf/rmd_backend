@@ -2,7 +2,7 @@ package ru.rmd.monolith.service
 
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import ru.rmd.monolith.dto.PersistPostRequest
+import ru.rmd.monolith.dto.request.PersistPostRequest
 import ru.rmd.monolith.entity.PostEntity
 
 interface PostService {

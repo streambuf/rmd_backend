@@ -7,8 +7,8 @@ import org.springframework.http.server.reactive.ServerHttpResponse
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import ru.rmd.monolith.dto.UploadFileResponse
-import ru.rmd.monolith.dto.UploadImageByUrlRequest
+import ru.rmd.monolith.dto.response.UploadFileResponse
+import ru.rmd.monolith.dto.request.UploadImageByUrlRequest
 import ru.rmd.monolith.repository.ImageRepository
 import ru.rmd.monolith.service.ImageService
 

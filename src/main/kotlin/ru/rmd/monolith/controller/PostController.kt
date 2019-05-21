@@ -3,7 +3,7 @@ package ru.rmd.monolith.controller
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import ru.rmd.monolith.dto.PersistPostRequest
+import ru.rmd.monolith.dto.request.PersistPostRequest
 import ru.rmd.monolith.entity.PostEntity
 import ru.rmd.monolith.service.PostService
 

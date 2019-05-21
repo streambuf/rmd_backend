@@ -1,4 +1,4 @@
-package ru.rmd.monolith.dto
+package ru.rmd.monolith.dto.response
 
 data class UploadFileResponse(
         val success: Int = 1,

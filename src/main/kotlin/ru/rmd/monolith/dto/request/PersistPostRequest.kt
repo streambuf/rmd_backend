@@ -1,4 +1,4 @@
-package ru.rmd.monolith.dto
+package ru.rmd.monolith.dto.request
 
 class PersistPostRequest(
     var message: Map<String, Any>,

@@ -8,9 +8,9 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.publisher.switchIfEmpty
 import ru.rmd.monolith.configuration.AppProperties
-import ru.rmd.monolith.dto.UploadFile
-import ru.rmd.monolith.dto.UploadFileResponse
-import ru.rmd.monolith.dto.UploadImageByUrlRequest
+import ru.rmd.monolith.dto.response.UploadFile
+import ru.rmd.monolith.dto.response.UploadFileResponse
+import ru.rmd.monolith.dto.request.UploadImageByUrlRequest
 import ru.rmd.monolith.entity.ImageEntity
 import ru.rmd.monolith.exception.NotFoundException
 import ru.rmd.monolith.repository.ImageRepository

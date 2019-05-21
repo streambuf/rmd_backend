@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 import org.springframework.stereotype.Repository
-import ru.rmd.monolith.dto.PersistPostRequest
+import ru.rmd.monolith.dto.request.PersistPostRequest
 import ru.rmd.monolith.entity.PostEntity
 import ru.rmd.monolith.repository.PostRepositoryCustom
 import java.util.*
