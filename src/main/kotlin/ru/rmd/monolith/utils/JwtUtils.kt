@@ -5,6 +5,8 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
+import mu.KLogging
+import mu.KotlinLogging
 import ru.rmd.monolith.exception.JwtParseException
 import javax.crypto.SecretKey
 import kotlin.reflect.KClass
@@ -12,6 +14,7 @@ import kotlin.reflect.KClass
 object JwtUtils {
 
     private val mapper: ObjectMapper = ObjectMapper()
+    private val logger = KotlinLogging.logger {  }
 
     init {
         mapper.registerModule(KotlinModule())
@@ -22,7 +25,10 @@ object JwtUtils {
         try {
             val payload = getTokenBody(signingKey, jwt)
             return mapper.convertValue(payload, clazz.java)
-        } catch (e: java.lang.Exception) {
+        } catch (e: Exception) {
+            if (jwt != "null") {
+                logger.warn { "Error parse jwt token:    ${e.message}" }
+            }
             throw JwtParseException("Error parse ${clazz.simpleName}: ${e.message}")
         }
     }

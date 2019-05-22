@@ -9,7 +9,6 @@ import ru.rmd.monolith.service.PostService
 
 @RestController
 @RequestMapping("/api/v1/posts")
-@CrossOrigin(origins = ["*"])
 class PostController(
         private val postService: PostService
 ) {

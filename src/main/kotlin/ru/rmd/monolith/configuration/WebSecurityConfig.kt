@@ -14,7 +14,10 @@ import org.springframework.security.web.server.util.matcher.ServerWebExchangeMat
 import org.springframework.security.authorization.AuthenticatedReactiveAuthorizationManager.authenticated
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.web.server.SecurityWebFilterChain
-
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.reactive.CorsConfigurationSource
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource
+import java.util.*
 
 
 @EnableWebFluxSecurity
@@ -38,10 +41,21 @@ class WebSecurityConfig(
                 .securityContextRepository(securityContextRepository)
                 .authorizeExchange()
                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
-//                .pathMatchers("/api/v1/users/login").permitAll()
-                .pathMatchers("/api/v1/users").permitAll()
+                .pathMatchers(HttpMethod.POST, "/api/v1/users", "/api/v1/users/login").permitAll()
+                .pathMatchers(HttpMethod.GET,"/api/v1/posts/**").permitAll()
                 .anyExchange().authenticated()
                 .and().build()
+    }
+
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val configuration = CorsConfiguration()
+        configuration.allowCredentials = true
+        configuration.allowedOrigins = Arrays.asList("*")
+        configuration.allowedMethods = Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD")
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", configuration)
+        return source
     }
 
 

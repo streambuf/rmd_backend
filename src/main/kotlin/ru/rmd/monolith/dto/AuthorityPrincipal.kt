@@ -1,6 +1,6 @@
 package ru.rmd.monolith.dto
 
-data class AuthTokenPayload(
+data class AuthorityPrincipal(
         val login: String,
         val privileges: Set<String>
 )

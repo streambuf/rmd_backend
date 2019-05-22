@@ -1,6 +1,6 @@
 package ru.rmd.monolith.dto
 
-data class UserInfoDTO(
+data class UserInfo(
         val login: String,
         val email: String?,
         val privileges: Set<String>,
