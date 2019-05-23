@@ -1,8 +1,10 @@
 package ru.rmd.monolith.controller
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import ru.rmd.monolith.dto.AuthorityPrincipal
 import ru.rmd.monolith.dto.request.PersistPostRequest
 import ru.rmd.monolith.entity.PostEntity
 import ru.rmd.monolith.service.PostService
@@ -24,8 +26,12 @@ class PostController(
     }
 
     @PutMapping(value = ["/{id}"])
-    fun update(@PathVariable("id") id: String, @RequestBody request: PersistPostRequest): Mono<PostEntity> {
-        return postService.update(id, request)
+    fun update(
+            @PathVariable("id") id: String,
+            @RequestBody request: PersistPostRequest,
+            @AuthenticationPrincipal principal: AuthorityPrincipal
+    ): Mono<PostEntity> {
+        return postService.update(id, request, principal)
     }
 
     @GetMapping(value = [""])

@@ -3,10 +3,12 @@ package ru.rmd.monolith.controller
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import ru.rmd.monolith.exception.BadRequestException
 import ru.rmd.monolith.exception.NotFoundException
+import ru.rmd.monolith.exception.PermissionException
 import ru.rmd.monolith.exception.UserException
 
 @RestControllerAdvice
@@ -33,6 +35,10 @@ class ExceptionHandlerController {
             is NotFoundException -> {
                 logger.info { "NotFoundException: ${ex.message}"  }
                 HttpStatus.NOT_FOUND
+            }
+            is PermissionException, is AccessDeniedException -> {
+                logger.info { "PermissionException: ${ex.message}"  }
+                HttpStatus.FORBIDDEN
             }
             else -> {
                 logger.error("Unhandled error: ${ex.message}", ex)

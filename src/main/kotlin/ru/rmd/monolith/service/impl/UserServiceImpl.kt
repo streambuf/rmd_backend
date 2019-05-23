@@ -1,10 +1,12 @@
 package ru.rmd.monolith.service.impl
 
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.core.publisher.switchIfEmpty
 import ru.rmd.monolith.configuration.AppProperties
 import ru.rmd.monolith.dto.AuthorityPrincipal
+import ru.rmd.monolith.dto.Privilege
 import ru.rmd.monolith.dto.UserInfo
 import ru.rmd.monolith.dto.request.LoginUserRequest
 import ru.rmd.monolith.dto.request.RegisterUserRequest
@@ -28,7 +30,7 @@ class UserServiceImpl(
 
     override fun registerUser(request: RegisterUserRequest): Mono<UserInfo> {
         val user = convertRegisterUserRequestToUserEntity(request)
-        user.authToken = JwtUtils.generateJwt(AuthorityPrincipal(request.login, emptySet()), props.jwtAuthSigningKey)
+        user.authToken = JwtUtils.generateJwt(AuthorityPrincipal(request.login, EnumSet.noneOf(Privilege::class.java)), props.jwtAuthSigningKey)
         return userRepository.insert(user).map { convertUserEntityToUserInfoDTO(it) }
     }
 
@@ -42,6 +44,7 @@ class UserServiceImpl(
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     override fun createFakeUser(login: String): Mono<UserEntity> {
         return userRepository.findById(login).flatMap {
             if (it.isFake) {
