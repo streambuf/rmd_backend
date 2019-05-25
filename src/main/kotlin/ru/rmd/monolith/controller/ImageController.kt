@@ -17,7 +17,7 @@ class ImageController(
         private val imageService: ImageService
 ) {
 
-    @GetMapping(value = ["/{id}"], produces = ["image/*"])
+    @GetMapping(value = ["/{id}"])
     fun load(@PathVariable("id") id: String, response: ServerHttpResponse): Mono<DataBuffer> {
         return imageService.getImageById(id).map { response.bufferFactory().wrap(it.data!!) }
     }
