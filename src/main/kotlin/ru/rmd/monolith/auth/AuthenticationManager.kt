@@ -27,5 +27,5 @@ class AuthenticationManager(
                 .map { UsernamePasswordAuthenticationToken(it, null, privilegesToAuthorities(it.privileges)) }
     }
 
-    private fun privilegesToAuthorities(privileges: EnumSet<Privilege>) = privileges.map { SimpleGrantedAuthority(it.name) }
+    private fun privilegesToAuthorities(privileges: EnumSet<Privilege>) = privileges.map { SimpleGrantedAuthority("ROLE_${it.name}") }
 }

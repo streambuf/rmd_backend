@@ -1,12 +1,11 @@
 package ru.rmd.monolith.service.impl
 
 import org.springframework.stereotype.Service
+import org.springframework.util.StringUtils
 import reactor.core.publisher.Mono
 import ru.rmd.monolith.dto.AuthorityPrincipal
-import ru.rmd.monolith.dto.Privilege
 import ru.rmd.monolith.dto.request.PersistPostRequest
 import ru.rmd.monolith.entity.PostEntity
-import ru.rmd.monolith.exception.BadRequestException
 import ru.rmd.monolith.exception.NotFoundException
 import ru.rmd.monolith.exception.PermissionException
 import ru.rmd.monolith.repository.PostRepository
@@ -27,14 +26,19 @@ class PostServiceImpl(
 
     override fun getList() = postRepository.findAll()
 
-    override fun create(request: PersistPostRequest): Mono<PostEntity> {
-        return userService.createFakeUser(request.system!!.author!!)
-                .then(postRepository.insert(convertRequestToPostEntity(request = request)))
+    override fun create(request: PersistPostRequest, principal: AuthorityPrincipal): Mono<PostEntity> {
+        val userMono = request.system?.author
+                ?.takeIf { !StringUtils.isEmpty(it) }
+                ?.let { userService.createFakeUser(it) }
+                ?.map { it.id }
+                ?: Mono.just(principal.login)
+
+        return userMono.flatMap { author -> postRepository.insert(convertRequestToPostEntity(request, author!!)) }
     }
 
     override fun update(id: String, request: PersistPostRequest, principal: AuthorityPrincipal) = getOne(id)
             .flatMap {
-                if (principal.privileges.contains(Privilege.ADMIN) || it.author == principal.login) {
+                if (principal.isAdmin() || it.author == principal.login) {
                     Mono.just(it)
                 } else {
                     Mono.error<RuntimeException>(PermissionException("Update post denied"))
@@ -42,7 +46,7 @@ class PostServiceImpl(
             }.then(postRepositoryCustom.update(id, request))
             .then(getOne(id))
 
-    private fun convertRequestToPostEntity(request: PersistPostRequest, author: String? = null) = PostEntity(
+    private fun convertRequestToPostEntity(request: PersistPostRequest, author: String) = PostEntity(
             id = null,
             message = request.message,
             datingService = request.datingService,
@@ -52,7 +56,7 @@ class PostServiceImpl(
             age = request.age,
             gender = request.gender,
             image = request.image,
-            author = request.system?.author ?: author ?: throw BadRequestException("Empty author"),
+            author = author,
             createdAt = Date(),
             updatedAt = null
     )

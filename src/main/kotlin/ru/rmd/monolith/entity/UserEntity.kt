@@ -2,6 +2,8 @@ package ru.rmd.monolith.entity
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
+import ru.rmd.monolith.dto.Privilege
+import java.util.*
 
 @Document(collection = "users")
 class UserEntity {
@@ -17,6 +19,6 @@ class UserEntity {
 
     var isFake: Boolean = false
 
-    var privileges: Set<String>? = null
+    var privileges: EnumSet<Privilege>? = null
 
 }

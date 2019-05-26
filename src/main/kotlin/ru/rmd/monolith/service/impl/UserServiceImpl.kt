@@ -2,6 +2,7 @@ package ru.rmd.monolith.service.impl
 
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
+import org.springframework.util.StringUtils
 import reactor.core.publisher.Mono
 import reactor.core.publisher.switchIfEmpty
 import ru.rmd.monolith.configuration.AppProperties
@@ -30,14 +31,19 @@ class UserServiceImpl(
 
     override fun registerUser(request: RegisterUserRequest): Mono<UserInfo> {
         val user = convertRegisterUserRequestToUserEntity(request)
-        user.authToken = JwtUtils.generateJwt(AuthorityPrincipal(request.login, EnumSet.noneOf(Privilege::class.java)), props.jwtAuthSigningKey)
+        user.authToken = createAuthToken(request.login, EnumSet.noneOf(Privilege::class.java))
         return userRepository.insert(user).map { convertUserEntityToUserInfoDTO(it) }
     }
 
     override fun loginUser(request: LoginUserRequest): Mono<UserInfo> {
        return userRepository.findById(request.login).flatMap {
             if (Objects.equals(HashGenerator.generateHash(request.password, request.login), it.password)) {
-                Mono.just(convertUserEntityToUserInfoDTO(it))
+                if (StringUtils.isEmpty(it.authToken)) {
+                    it.authToken = createAuthToken(request.login, it.privileges)
+                    userRepository.save(it).map { convertUserEntityToUserInfoDTO(it) }
+                } else {
+                    Mono.just(convertUserEntityToUserInfoDTO(it))
+                }
             } else {
                 Mono.error(UserException("Неправильный логин или пароль"))
             }
@@ -61,6 +67,9 @@ class UserServiceImpl(
         }
     }
 
+    private fun createAuthToken(login: String, privileges: EnumSet<Privilege>?) =
+            JwtUtils.generateJwt(AuthorityPrincipal(login, privileges ?: EnumSet.noneOf(Privilege::class.java)), props.jwtAuthSigningKey)
+
     private fun convertRegisterUserRequestToUserEntity(request: RegisterUserRequest) = UserEntity()
             .apply {
                 id = request.login
@@ -71,7 +80,7 @@ class UserServiceImpl(
     private fun convertUserEntityToUserInfoDTO(user: UserEntity) = UserInfo(
             login = user.id!!,
             email = user.email,
-            privileges = user.privileges ?: emptySet(),
+            privileges = user.privileges ?: EnumSet.noneOf(Privilege::class.java),
             authToken = user.authToken
     )
 

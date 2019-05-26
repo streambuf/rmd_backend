@@ -16,8 +16,8 @@ class PostController(
 ) {
 
     @PostMapping(value = [""])
-    fun create(@RequestBody request: PersistPostRequest): Mono<PostEntity> {
-        return postService.create(request)
+    fun create(@RequestBody request: PersistPostRequest, @AuthenticationPrincipal principal: AuthorityPrincipal): Mono<PostEntity> {
+        return postService.create(request, principal)
     }
 
     @GetMapping(value = ["/{id}"])
