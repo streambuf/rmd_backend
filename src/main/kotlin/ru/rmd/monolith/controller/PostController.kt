@@ -1,5 +1,9 @@
 package ru.rmd.monolith.controller
 
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.data.web.PageableDefault
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
@@ -35,7 +39,9 @@ class PostController(
     }
 
     @GetMapping(value = [""])
-    fun getList(): Flux<PostEntity> {
-        return postService.getList()
+    fun getList(@RequestParam("size") size: Int?,
+                @RequestParam("page") page: Int?
+    ): Flux<PostEntity> {
+        return postService.getList(size, page)
     }
 }

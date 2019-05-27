@@ -1,10 +1,12 @@
 package ru.rmd.monolith.repository.impl
 
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 import org.springframework.stereotype.Repository
+import reactor.core.publisher.Flux
 import ru.rmd.monolith.dto.request.PersistPostRequest
 import ru.rmd.monolith.entity.PostEntity
 import ru.rmd.monolith.repository.PostRepositoryCustom
@@ -26,5 +28,12 @@ class PostRepositoryCustomImpl(
                         .set("image", request.image ?: "")
                         .set("updatedAt", Date()),
             PostEntity::class.java)
+
+
+    override fun find(pageRequest: PageRequest): Flux<PostEntity> {
+        val query = Query()
+        query.with(pageRequest)
+        return template.find(query, PostEntity::class.java, "posts")
+    }
 
 }

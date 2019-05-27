@@ -1,7 +1,11 @@
 package ru.rmd.monolith.service.impl
 
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import ru.rmd.monolith.dto.AuthorityPrincipal
 import ru.rmd.monolith.dto.request.PersistPostRequest
@@ -24,7 +28,10 @@ class PostServiceImpl(
     override fun getOne(id: String) = postRepository.findById(id)
             .switchIfEmpty(Mono.error(NotFoundException("Not found post with id: $id")))
 
-    override fun getList() = postRepository.findAll()
+    override fun getList(size: Int?, page: Int?): Flux<PostEntity> {
+        val pageRequest = PageRequest.of(page ?: 0, size ?: 30, Sort.Direction.DESC, "createdAt")
+        return postRepositoryCustom.find(pageRequest)
+    }
 
     override fun create(request: PersistPostRequest, principal: AuthorityPrincipal): Mono<PostEntity> {
         val userMono = request.system?.author
