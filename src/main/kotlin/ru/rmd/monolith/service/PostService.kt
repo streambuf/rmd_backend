@@ -7,8 +7,8 @@ import ru.rmd.monolith.dto.request.PersistPostRequest
 import ru.rmd.monolith.entity.PostEntity
 
 interface PostService {
-    fun getOne(id: String): Mono<PostEntity>
+    fun getOne(slug: String): Mono<PostEntity>
     fun getList(size: Int?, page: Int?): Flux<PostEntity>
     fun create(request: PersistPostRequest, principal: AuthorityPrincipal): Mono<PostEntity>
-    fun update(id: String, request: PersistPostRequest, principal: AuthorityPrincipal): Mono<PostEntity>
+    fun update(slug: String, request: PersistPostRequest, principal: AuthorityPrincipal): Mono<PostEntity>
 }

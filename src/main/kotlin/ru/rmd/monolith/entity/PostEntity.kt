@@ -17,6 +17,7 @@ data class PostEntity(
         var gender: String,
         var image: String?,
         var author: String,
+        var slug: String,
         var createdAt: Date,
         var updatedAt: Date?
 ) {

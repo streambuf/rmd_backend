@@ -1,9 +1,5 @@
 package ru.rmd.monolith.controller
 
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
-import org.springframework.data.web.PageableDefault
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
@@ -24,18 +20,18 @@ class PostController(
         return postService.create(request, principal)
     }
 
-    @GetMapping(value = ["/{id}"])
-    fun getOne(@PathVariable("id") id: String): Mono<PostEntity> {
-        return postService.getOne(id)
+    @GetMapping(value = ["/{slug}"])
+    fun getOne(@PathVariable("slug") slug: String): Mono<PostEntity> {
+        return postService.getOne(slug)
     }
 
-    @PutMapping(value = ["/{id}"])
+    @PutMapping(value = ["/{slug}"])
     fun update(
-            @PathVariable("id") id: String,
+            @PathVariable("slug") slug: String,
             @RequestBody request: PersistPostRequest,
             @AuthenticationPrincipal principal: AuthorityPrincipal
     ): Mono<PostEntity> {
-        return postService.update(id, request, principal)
+        return postService.update(slug, request, principal)
     }
 
     @GetMapping(value = [""])

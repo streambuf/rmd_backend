@@ -2,7 +2,6 @@ package ru.rmd.monolith.service.impl
 
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
-import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
 import reactor.core.publisher.Flux
@@ -16,6 +15,7 @@ import ru.rmd.monolith.repository.PostRepository
 import ru.rmd.monolith.repository.PostRepositoryCustom
 import ru.rmd.monolith.service.PostService
 import ru.rmd.monolith.service.UserService
+import ru.rmd.monolith.utils.TranslitUtils
 import java.util.*
 
 @Service
@@ -25,8 +25,8 @@ class PostServiceImpl(
         private val userService: UserService
 ) : PostService {
 
-    override fun getOne(id: String) = postRepository.findById(id)
-            .switchIfEmpty(Mono.error(NotFoundException("Not found post with id: $id")))
+    override fun getOne(slug: String) = postRepository.findBySlug(slug)
+            .switchIfEmpty(Mono.error(NotFoundException("Not found post with slug: $slug")))
 
     override fun getList(size: Int?, page: Int?): Flux<PostEntity> {
         val pageRequest = PageRequest.of(page ?: 0, size ?: 30, Sort.Direction.DESC, "createdAt")
@@ -40,20 +40,29 @@ class PostServiceImpl(
                 ?.map { it.id }
                 ?: Mono.just(principal.login)
 
-        return userMono.flatMap { author -> postRepository.insert(convertRequestToPostEntity(request, author!!)) }
+        var slug = createSlug(request.datingService, request.name, request.age, request.city)
+
+        val slugMono = postRepository.countBySlug(slug).map { count ->
+            if (count > 0) {
+                slug = "${slug}_$count"
+            }
+            slug
+        }
+
+        return Mono.zip(userMono, slugMono).flatMap { postRepository.insert(convertRequestToPostEntity(request, it.t1!!, it.t2!!)) }
     }
 
-    override fun update(id: String, request: PersistPostRequest, principal: AuthorityPrincipal) = getOne(id)
+    override fun update(slug: String, request: PersistPostRequest, principal: AuthorityPrincipal) = getOne(slug)
             .flatMap {
                 if (principal.isAdmin() || it.author == principal.login) {
                     Mono.just(it)
                 } else {
                     Mono.error<RuntimeException>(PermissionException("Update post denied"))
                 }
-            }.then(postRepositoryCustom.update(id, request))
-            .then(getOne(id))
+            }.then(postRepositoryCustom.update(slug, request))
+            .then(getOne(slug))
 
-    private fun convertRequestToPostEntity(request: PersistPostRequest, author: String) = PostEntity(
+    private fun convertRequestToPostEntity(request: PersistPostRequest, author: String, slug: String) = PostEntity(
             id = null,
             message = request.message,
             datingService = request.datingService,
@@ -65,7 +74,14 @@ class PostServiceImpl(
             image = request.image,
             author = author,
             createdAt = Date(),
-            updatedAt = null
+            updatedAt = null,
+            slug = slug
     )
+
+    private fun createSlug(datingService: String, name: String, age: Int, city: String) =
+            "отзыв с сайта знакомств $datingService $name $age город $city"
+                    .replace(" ", "-")
+                    .replace(".", "-")
+                    .let { TranslitUtils.translit(it) }
 
 }

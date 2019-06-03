@@ -17,7 +17,7 @@ class PostRepositoryCustomImpl(
         private val template: ReactiveMongoTemplate
 ) : PostRepositoryCustom {
 
-    override fun update(id: String, request: PersistPostRequest) = template.updateFirst(Query(Criteria.where("id").`is`(id)),
+    override fun update(id: String, request: PersistPostRequest) = template.updateFirst(Query(Criteria.where("slug").`is`(id)),
                 Update().set("message", request.message)
                         .set("datingService", request.datingService)
                         .set("datingServiceProfileLink", request.datingServiceProfileLink ?: "")
