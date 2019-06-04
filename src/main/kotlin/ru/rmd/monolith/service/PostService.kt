@@ -8,7 +8,7 @@ import ru.rmd.monolith.entity.PostEntity
 
 interface PostService {
     fun getOne(slug: String): Mono<PostEntity>
-    fun getList(size: Int?, page: Int?): Flux<PostEntity>
+    fun getList(size: Int? = 30, page: Int? = 0): Flux<PostEntity>
     fun create(request: PersistPostRequest, principal: AuthorityPrincipal): Mono<PostEntity>
     fun update(slug: String, request: PersistPostRequest, principal: AuthorityPrincipal): Mono<PostEntity>
 }

@@ -29,7 +29,7 @@ class PostServiceImpl(
             .switchIfEmpty(Mono.error(NotFoundException("Not found post with slug: $slug")))
 
     override fun getList(size: Int?, page: Int?): Flux<PostEntity> {
-        val pageRequest = PageRequest.of(page ?: 0, size ?: 30, Sort.Direction.DESC, "createdAt")
+        val pageRequest = PageRequest.of(page!!, size!!, Sort.Direction.DESC, "createdAt")
         return postRepositoryCustom.find(pageRequest)
     }
 
