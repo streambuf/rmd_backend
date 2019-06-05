@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono
 import ru.rmd.monolith.service.SitemapService
 
 @RestController
-@RequestMapping("/api/v1/sitemap")
+@RequestMapping("/api/v1/sitemap.xml")
 class SitemapController(
         private val sitemapService: SitemapService
 ) {
