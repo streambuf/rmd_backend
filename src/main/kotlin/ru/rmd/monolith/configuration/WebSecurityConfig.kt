@@ -34,7 +34,8 @@ class WebSecurityConfig(
                 .authorizeExchange()
                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
                 .pathMatchers(HttpMethod.POST, "/api/v1/users", "/api/v1/users/login").permitAll()
-                .pathMatchers(HttpMethod.GET,"/api/v1/posts/**", "/api/v1/images/**", "/api/v1/sitemap.xml", "/api/v1/robots.txt").permitAll()
+                .pathMatchers(HttpMethod.GET,"/api/v1/posts/**", "/api/v1/images/**", "/api/v1/sitemap.xml",
+                        "/api/v1/robots.txt", "/actuator/**").permitAll()
                 .anyExchange().authenticated()
                 .and().build()
     }
