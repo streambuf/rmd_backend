@@ -16,7 +16,7 @@ class SitemapServiceImpl(
 
     override fun createSitemap(): Mono<String> {
         val sitemap = WebSitemapGenerator(properties.serverHost)
-        return postService.getList()
+        return postService.getAll()
                 .doOnNext { sitemap.addUrl("${properties.serverHost}/posts/${it.slug}") }
                 .reduce { t, _ -> t }.map { sitemap.writeAsStrings().joinToString("") }
     }

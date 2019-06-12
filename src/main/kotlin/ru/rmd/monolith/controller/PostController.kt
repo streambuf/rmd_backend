@@ -5,7 +5,9 @@ import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import ru.rmd.monolith.dto.AuthorityPrincipal
+import ru.rmd.monolith.dto.RangeDate
 import ru.rmd.monolith.dto.request.PersistPostRequest
+import ru.rmd.monolith.dto.request.PostListRequest
 import ru.rmd.monolith.entity.PostEntity
 import ru.rmd.monolith.service.PostService
 
@@ -36,8 +38,26 @@ class PostController(
 
     @GetMapping(value = [""])
     fun getList(@RequestParam("size") size: Int?,
-                @RequestParam("page") page: Int?
+                @RequestParam("page") page: Int?,
+                @RequestParam("city") city: String?,
+                @RequestParam("ageMin") ageMin: Int?,
+                @RequestParam("ageMax") ageMax: Int?,
+                @RequestParam("gender") gender: String?,
+                @RequestParam("services") services: List<String>?,
+                @RequestParam("order") order: String?,
+                @RequestParam("rangeDate") rangeDate: RangeDate?
     ): Flux<PostEntity> {
-        return postService.getList(size, page)
+        val request = PostListRequest(
+                size = size,
+                page = page,
+                city = city,
+                ageMin = ageMin,
+                ageMax = ageMax,
+                gender = gender,
+                services = services,
+                order = order,
+                rangeDate = rangeDate
+        )
+        return postService.getList(request)
     }
 }

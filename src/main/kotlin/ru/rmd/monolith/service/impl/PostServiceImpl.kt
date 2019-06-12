@@ -7,7 +7,10 @@ import org.springframework.util.StringUtils
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import ru.rmd.monolith.dto.AuthorityPrincipal
+import ru.rmd.monolith.dto.RangeDate
 import ru.rmd.monolith.dto.request.PersistPostRequest
+import ru.rmd.monolith.dto.request.PostListRequest
+import ru.rmd.monolith.dto.request.PostListSearchRequest
 import ru.rmd.monolith.entity.PostEntity
 import ru.rmd.monolith.exception.NotFoundException
 import ru.rmd.monolith.exception.PermissionException
@@ -16,6 +19,8 @@ import ru.rmd.monolith.repository.PostRepositoryCustom
 import ru.rmd.monolith.service.PostService
 import ru.rmd.monolith.service.UserService
 import ru.rmd.monolith.utils.TranslitUtils
+import java.time.Duration
+import java.time.Instant
 import java.util.*
 
 @Service
@@ -28,9 +33,26 @@ class PostServiceImpl(
     override fun getOne(slug: String) = postRepository.findBySlug(slug)
             .switchIfEmpty(Mono.error(NotFoundException("Not found post with slug: $slug")))
 
-    override fun getList(size: Int?, page: Int?): Flux<PostEntity> {
-        val pageRequest = PageRequest.of(page!!, size!!, Sort.Direction.DESC, "createdAt")
-        return postRepositoryCustom.find(pageRequest)
+    override fun getList(request: PostListRequest): Flux<PostEntity> {
+        val order = request.order ?: "createdAt"
+        val pageRequest = PageRequest.of(request.page ?: 0, request.size ?: 30, Sort.Direction.DESC, order)
+        val minDate = convertRangeDateToMinDate(request.rangeDate)
+
+        val searchRequest = PostListSearchRequest(
+                pageRequest = pageRequest,
+                city = request.city,
+                ageMin = request.ageMin,
+                ageMax = request.ageMax,
+                gender = request.gender,
+                services = request.services,
+                minDate = minDate
+        )
+
+        return postRepositoryCustom.find(searchRequest)
+    }
+
+    override fun getAll(): Flux<PostEntity> {
+        return postRepositoryCustom.findAll()
     }
 
     override fun create(request: PersistPostRequest, principal: AuthorityPrincipal): Mono<PostEntity> {
@@ -61,6 +83,22 @@ class PostServiceImpl(
                 }
             }.then(postRepositoryCustom.update(slug, request))
             .then(getOne(slug))
+
+    private fun convertRangeDateToMinDate(rangeDate: RangeDate?): Date? {
+        if (rangeDate == null) {
+            return null
+        }
+
+        val dayCount = when (rangeDate) {
+            RangeDate.DAY -> 1L
+            RangeDate.WEEK -> 7L
+            RangeDate.MONTH -> 30L
+        }
+
+        val now = Instant.now()
+        val before = now.minus(Duration.ofDays(dayCount));
+        return Date.from(before)
+    }
 
     private fun convertRequestToPostEntity(request: PersistPostRequest, author: String, slug: String) = PostEntity(
             id = null,
