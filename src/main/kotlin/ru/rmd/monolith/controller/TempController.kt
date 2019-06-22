@@ -15,11 +15,10 @@ class TempController(
 
 
     @GetMapping(value = ["/description"])
-    fun getCurrentUser() = postRepository.findAll().map {
+    fun getCurrentUser() = postRepository.findAll().flatMap {
         val d = descriptionService.createDescription(it.name, it.datingService, it.city)
         it.description = d
         postRepository.save(it)
-        it
     }
 
 
