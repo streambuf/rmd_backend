@@ -27,7 +27,8 @@ import java.util.*
 class PostServiceImpl(
         private val postRepository: PostRepository,
         private val postRepositoryCustom: PostRepositoryCustom,
-        private val userService: UserService
+        private val userService: UserService,
+        private val descriptionServiceImpl: DescriptionServiceImpl
 ) : PostService {
 
     override fun getOne(slug: String) = postRepository.findBySlug(slug)
@@ -71,7 +72,9 @@ class PostServiceImpl(
             slug
         }
 
-        return Mono.zip(userMono, slugMono).flatMap { postRepository.insert(convertRequestToPostEntity(request, it.t1!!, it.t2!!)) }
+        val description = descriptionServiceImpl.createDescription(request.name, request.datingService, request.city)
+
+        return Mono.zip(userMono, slugMono).flatMap { postRepository.insert(convertRequestToPostEntity(request, it.t1!!, it.t2!!, description)) }
     }
 
     override fun update(slug: String, request: PersistPostRequest, principal: AuthorityPrincipal) = getOne(slug)
@@ -100,7 +103,7 @@ class PostServiceImpl(
         return Date.from(before)
     }
 
-    private fun convertRequestToPostEntity(request: PersistPostRequest, author: String, slug: String) = PostEntity(
+    private fun convertRequestToPostEntity(request: PersistPostRequest, author: String, slug: String, description: String) = PostEntity(
             id = null,
             message = request.message,
             datingService = request.datingService,
@@ -113,7 +116,8 @@ class PostServiceImpl(
             author = author,
             createdAt = Date(),
             updatedAt = null,
-            slug = slug
+            slug = slug,
+            description = description
     )
 
     private fun createSlug(datingService: String, name: String, age: Int, city: String) =
