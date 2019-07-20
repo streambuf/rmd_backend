@@ -8,13 +8,16 @@ import ru.rmd.monolith.dto.AuthorityPrincipal
 import ru.rmd.monolith.dto.RangeDate
 import ru.rmd.monolith.dto.request.PersistPostRequest
 import ru.rmd.monolith.dto.request.PostListRequest
+import ru.rmd.monolith.dto.request.VoteRequest
 import ru.rmd.monolith.entity.PostEntity
+import ru.rmd.monolith.service.PostRatingService
 import ru.rmd.monolith.service.PostService
 
 @RestController
 @RequestMapping("/api/v1/posts")
 class PostController(
-        private val postService: PostService
+        private val postService: PostService,
+        private val postRatingService: PostRatingService
 ) {
 
     @PostMapping(value = [""])
@@ -24,7 +27,7 @@ class PostController(
 
     @GetMapping(value = ["/{slug}"])
     fun getOne(@PathVariable("slug") slug: String): Mono<PostEntity> {
-        return postService.getOne(slug)
+        return postService.getOneBySlug(slug)
     }
 
     @PutMapping(value = ["/{slug}"])
@@ -34,6 +37,11 @@ class PostController(
             @AuthenticationPrincipal principal: AuthorityPrincipal
     ): Mono<PostEntity> {
         return postService.update(slug, request, principal)
+    }
+
+    @PostMapping(value = ["/vote"])
+    fun vote(@RequestBody request: VoteRequest, @AuthenticationPrincipal principal: AuthorityPrincipal): Mono<PostEntity> {
+        return postRatingService.updatePostRating(request, principal)
     }
 
     @GetMapping(value = [""])

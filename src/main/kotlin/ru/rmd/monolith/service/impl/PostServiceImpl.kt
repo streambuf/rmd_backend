@@ -31,8 +31,11 @@ class PostServiceImpl(
         private val descriptionServiceImpl: DescriptionServiceImpl
 ) : PostService {
 
-    override fun getOne(slug: String) = postRepository.findBySlug(slug)
+    override fun getOneBySlug(slug: String) = postRepository.findBySlug(slug)
             .switchIfEmpty(Mono.error(NotFoundException("Not found post with slug: $slug")))
+
+    override fun getOneById(id: String) = postRepository.findById(id)
+            .switchIfEmpty(Mono.error(NotFoundException("Not found post with id: $id")))
 
     override fun getList(request: PostListRequest): Flux<PostEntity> {
         val order = request.order ?: "createdAt"
@@ -77,7 +80,7 @@ class PostServiceImpl(
         return Mono.zip(userMono, slugMono).flatMap { postRepository.insert(convertRequestToPostEntity(request, it.t1!!, it.t2!!, description)) }
     }
 
-    override fun update(slug: String, request: PersistPostRequest, principal: AuthorityPrincipal) = getOne(slug)
+    override fun update(slug: String, request: PersistPostRequest, principal: AuthorityPrincipal) = getOneBySlug(slug)
             .flatMap {
                 if (principal.isAdmin() || it.author == principal.login) {
                     Mono.just(it)
@@ -85,7 +88,14 @@ class PostServiceImpl(
                     Mono.error<RuntimeException>(PermissionException("Update post denied"))
                 }
             }.then(postRepositoryCustom.update(slug, request))
-            .then(getOne(slug))
+            .then(getOneBySlug(slug))
+
+
+    override fun updateRating(id: String, rating: Int) = getOneById(id)
+            .flatMap {
+                val resultRating = rating + (it.rating ?: 0)
+                postRepositoryCustom.updateRating(it.id!!, resultRating)
+            }.then(getOneById(id))
 
     private fun convertRangeDateToMinDate(rangeDate: RangeDate?): Date? {
         if (rangeDate == null) {
@@ -117,7 +127,8 @@ class PostServiceImpl(
             createdAt = Date(),
             updatedAt = null,
             slug = slug,
-            description = description
+            description = description,
+            rating = 0
     )
 
     private fun createSlug(datingService: String, name: String, age: Int, city: String) =

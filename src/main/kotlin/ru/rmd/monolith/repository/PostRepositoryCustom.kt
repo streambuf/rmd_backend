@@ -9,7 +9,8 @@ import ru.rmd.monolith.dto.request.PostListSearchRequest
 import ru.rmd.monolith.entity.PostEntity
 
 interface PostRepositoryCustom {
-    fun update(id: String, request: PersistPostRequest): Mono<UpdateResult>
+    fun update(slug: String, request: PersistPostRequest): Mono<UpdateResult>
+    fun updateRating(id: String, rating: Int): Mono<UpdateResult>
     fun find(req: PostListSearchRequest): Flux<PostEntity>
     fun findAll(): Flux<PostEntity>
 }

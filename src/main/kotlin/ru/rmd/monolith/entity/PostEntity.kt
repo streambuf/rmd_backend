@@ -20,6 +20,7 @@ data class PostEntity(
         var slug: String,
         var description: String?,
         var createdAt: Date,
-        var updatedAt: Date?
+        var updatedAt: Date?,
+        var rating: Int?
 ) {
 }

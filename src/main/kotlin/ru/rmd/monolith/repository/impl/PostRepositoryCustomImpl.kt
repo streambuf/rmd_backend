@@ -19,7 +19,7 @@ class PostRepositoryCustomImpl(
         private val template: ReactiveMongoTemplate
 ) : PostRepositoryCustom {
 
-    override fun update(id: String, request: PersistPostRequest) = template.updateFirst(Query(Criteria.where("slug").`is`(id)),
+    override fun update(slug: String, request: PersistPostRequest) = template.updateFirst(Query(Criteria.where("slug").`is`(slug)),
                 Update().set("message", request.message)
                         .set("datingService", request.datingService)
                         .set("datingServiceProfileLink", request.datingServiceProfileLink ?: "")
@@ -31,6 +31,9 @@ class PostRepositoryCustomImpl(
                         .set("updatedAt", Date()),
             PostEntity::class.java)
 
+    // todo fix race condition - findAndModify
+    override fun updateRating(id: String, rating: Int) = template.updateFirst(Query(Criteria.where("id").`is`(id)),
+            Update().set("rating", rating), PostEntity::class.java)
 
     override fun find(req: PostListSearchRequest): Flux<PostEntity> {
         val query = Query()
