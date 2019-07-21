@@ -21,6 +21,7 @@ data class PostEntity(
         var description: String?,
         var createdAt: Date,
         var updatedAt: Date?,
-        var rating: Int?
+        var rating: Int?,
+        var comments: Int?
 ) {
 }

@@ -97,6 +97,12 @@ class PostServiceImpl(
                 postRepositoryCustom.updateRating(it.id!!, resultRating)
             }.then(getOneById(id))
 
+    override fun updateCommentsCount(postId: String, value: Int) = getOneById(postId)
+            .flatMap {
+                val commentsCount = value + (it.comments ?: 0)
+                postRepositoryCustom.updateCommentsCount(it.id!!, commentsCount)
+            }.then(getOneById(postId))
+
     private fun convertRangeDateToMinDate(rangeDate: RangeDate?): Date? {
         if (rangeDate == null) {
             return null
@@ -128,7 +134,8 @@ class PostServiceImpl(
             updatedAt = null,
             slug = slug,
             description = description,
-            rating = 0
+            rating = 0,
+            comments = 0
     )
 
     private fun createSlug(datingService: String, name: String, age: Int, city: String) =

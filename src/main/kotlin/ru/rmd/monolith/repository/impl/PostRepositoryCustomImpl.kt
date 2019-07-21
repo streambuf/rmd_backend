@@ -35,6 +35,9 @@ class PostRepositoryCustomImpl(
     override fun updateRating(id: String, rating: Int) = template.updateFirst(Query(Criteria.where("id").`is`(id)),
             Update().set("rating", rating), PostEntity::class.java)
 
+    override fun updateCommentsCount(id: String, comments: Int) = template.updateFirst(Query(Criteria.where("id").`is`(id)),
+            Update().set("comments", comments), PostEntity::class.java)
+
     override fun find(req: PostListSearchRequest): Flux<PostEntity> {
         val query = Query()
 

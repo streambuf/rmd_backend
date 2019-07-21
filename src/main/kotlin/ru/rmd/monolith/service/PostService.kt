@@ -15,4 +15,5 @@ interface PostService {
     fun create(request: PersistPostRequest, principal: AuthorityPrincipal): Mono<PostEntity>
     fun update(slug: String, request: PersistPostRequest, principal: AuthorityPrincipal): Mono<PostEntity>
     fun updateRating(id: String, rating: Int): Mono<PostEntity>
+    fun updateCommentsCount(postId: String, value: Int): Mono<PostEntity>
 }
