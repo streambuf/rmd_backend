@@ -1,7 +1,10 @@
 package ru.rmd.monolith.entity
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
+import ru.rmd.monolith.utils.Constants
+import ru.rmd.monolith.utils.Constants.DATE_FORMAT
 import java.util.*
 
 @Document(collection = "posts")
@@ -19,7 +22,11 @@ data class PostEntity(
         var author: String,
         var slug: String,
         var description: String?,
+
+        @JsonFormat(pattern= DATE_FORMAT)
         var createdAt: Date,
+
+        @JsonFormat(pattern= DATE_FORMAT)
         var updatedAt: Date?,
         var rating: Int?,
         var comments: Int?

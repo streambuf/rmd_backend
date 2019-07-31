@@ -7,5 +7,5 @@ import ru.rmd.monolith.entity.CommentEntity
 
 @Repository
 interface CommentRepository : ReactiveMongoRepository<CommentEntity, String> {
-    fun findByPostId(postId: String) : Flux<CommentEntity>
+    fun findByPostIdOrderByCreatedAtDesc(postId: String) : Flux<CommentEntity>
 }

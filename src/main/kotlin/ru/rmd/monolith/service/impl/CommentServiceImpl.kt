@@ -16,11 +16,11 @@ class CommentServiceImpl(
         private val commentRepository: CommentRepository
 ) : CommentService {
 
-    override fun getByPostId(postId: String) = commentRepository.findByPostId(postId)
+    override fun getByPostId(postId: String) = commentRepository.findByPostIdOrderByCreatedAtDesc(postId)
 
     override fun create(request: PersistCommentRequest, principal: AuthorityPrincipal): Mono<CommentEntity> {
         return commentRepository.save(convertRequestToCommentEntity(request, principal.login))
-                .doOnNext { postService.updateCommentsCount(it.postId, 1)  }
+                .flatMap { comment -> postService.updateCommentsCount(comment.postId, 1).map { comment } }
     }
 
     private fun convertRequestToCommentEntity(request: PersistCommentRequest, author: String) = CommentEntity(
