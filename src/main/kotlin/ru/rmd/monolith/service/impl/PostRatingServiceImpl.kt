@@ -37,7 +37,7 @@ class PostRatingServiceImpl(
                 }
                 .handle { postRating, sink: SynchronousSink<PostRatingEntity> ->
                     when {
-                        postRating.id == null -> sink.next(postRating)
+                        postRating.id == null || principal.isAdmin() -> sink.next(postRating)
                         postRating.rating != request.rating -> {
                             postRating.rating = postRating.rating + request.rating;
                             sink.next(postRating)
